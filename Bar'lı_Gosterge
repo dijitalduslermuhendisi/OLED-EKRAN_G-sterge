@@ -1,0 +1,46 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define GENISLIK 128
+#define YUKSEKLIK 32
+#define SIFIRLAMA_PINI -1
+
+Adafruit_SSD1306 ekran(GENISLIK, YUKSEKLIK, &Wire, SIFIRLAMA_PINI);
+
+const int potPin = A0;
+const int ledPin = 9;
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  ekran.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  ekran.clearDisplay();
+  ekran.setTextColor(SSD1306_WHITE);
+}
+
+void loop() {
+  int potDegeri = analogRead(potPin);
+  int pwmDegeri = map(potDegeri, 0, 1023, 0, 255);
+  int yuzde = map(pwmDegeri, 0, 255, 0, 100);
+  int barUzunlugu = map(yuzde, 0, 100, 0, 100);
+
+  analogWrite(ledPin, pwmDegeri);
+
+  ekran.clearDisplay();
+
+  ekran.setTextSize(1);
+  ekran.setCursor(0, 0);
+  ekran.print("PWM:");
+  ekran.print(pwmDegeri);
+  ekran.setCursor(70, 0);
+  ekran.print(yuzde);
+  ekran.print("%");
+
+  int barX = 14;
+  int barY = 16;
+  ekran.drawRect(barX, barY, 100, 10, SSD1306_WHITE);
+  ekran.fillRect(barX + 1, barY + 1, barUzunlugu - 2, 8, SSD1306_WHITE);
+
+  ekran.display();
+  delay(100);
+}
