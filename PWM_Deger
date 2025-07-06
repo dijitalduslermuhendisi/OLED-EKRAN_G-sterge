@@ -1,0 +1,35 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define OLED_WIDTH 128
+#define OLED_HEIGHT 64
+#define OLED_RESET -1
+
+Adafruit_SSD1306 display(OLED_WIDTH, OLED_HEIGHT, &Wire, OLED_RESET);
+
+const int potPin = A0;
+const int ledPin = 9;
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+}
+
+void loop() {
+  int potValue = analogRead(potPin);      
+  int pwmValue = map(potValue, 0, 1023, 0, 255); 
+
+  analogWrite(ledPin, pwmValue);            
+
+  display.clearDisplay();
+  display.setCursor(0, 10);
+  display.print("PWM: ");
+  display.print(pwmValue);
+  display.display();
+
+  delay(100);
+} 
